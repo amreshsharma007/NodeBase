@@ -1,0 +1,18 @@
+export default {
+  everythingOk: 200,
+  entryCreated: 201,
+  accepted: 202,
+  redirect: 302,
+  badRequest: 400,
+  unauthorized: 401,
+  forbidden: 403,
+  urlNotFound: 404,
+  notFound: 404,
+  conflict: 409,
+  expectationFailed: 417,
+  validationFailed: 422,
+  unProcessableEntity: 422,
+  serverError: 500,
+  emailAlreadyExists: 1002,
+  emailNotVerified: 1003,
+};
