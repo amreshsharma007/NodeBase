@@ -18,7 +18,11 @@ export default class LogBuilder {
     return this;
   }
 
-  public addSection(key: string, value: string | undefined = ''): LogBuilder {
+  public addSection(
+    key: string | undefined,
+    value: string | undefined = ''
+  ): LogBuilder {
+    if (!key) return this;
     this.addNewLine();
     this._log += key;
     if (value) {
@@ -28,12 +32,14 @@ export default class LogBuilder {
   }
 
   public addErrorSection(message: string | undefined): LogBuilder {
+    if (!message) return this;
     this._log += '\nError occurred: ';
     this._log += message;
     return this;
   }
 
   public addWarningSection(message: string | undefined): LogBuilder {
+    if (!message) return this;
     this._log += '\nWarning: ' + message;
     return this;
   }

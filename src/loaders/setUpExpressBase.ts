@@ -1,10 +1,16 @@
-import express, { Application, NextFunction, Request, Response } from 'express';
+import express, { Application, NextFunction, Response, Router } from 'express';
 import cors from 'cors';
 import { isCelebrateError } from 'celebrate';
 import ApiResponse from '../helpers/api-response';
 import apiResponseCodes from '../constants/apiResponseCodes';
 import { AxiosError } from 'axios';
 import ExceptionMonitorService from '../services/exception-monitor.service';
+import { v4 as uuidv4 } from 'uuid';
+import Request from '../interfaces/request';
+import { Container } from 'typedi';
+import { Logger } from 'winston';
+import LogBuilder from '../utils/log-builder';
+import PathUtils from '../utils/path.utils';
 
 /**
  * @swagger
@@ -24,19 +30,52 @@ function setUpExpressBase({
   allowedOrigins,
   allowedHeaders,
   useCORS,
+  routePrefix,
+  createRoutes,
 }: {
   server: Application;
   exceptionMonitor?: ExceptionMonitorService;
   useCORS?: boolean;
   allowedOrigins?: string[];
   allowedHeaders?: string[];
+  routePrefix: string;
+  createRoutes: () => Router;
 }): void {
-  server.get('/health', (req: Request, res: Response) => {
-    // const resp = new ApiResponse();
-    // resp.markSuccess();
-    // return res.status(res.statusCode).json(resp.createResponse());
-    return res.status(200).send();
-  });
+  // Log Configuration
+  (Container.get('logger') as Logger).info('Setting up express...');
+  (Container.get('logger') as Logger).info(
+    'Allowed Headers: ' + allowedHeaders?.join(', ')
+  );
+  (Container.get('logger') as Logger).info(
+    'CORS enabled: ' + (useCORS ? 'true' : 'false')
+  );
+  (Container.get('logger') as Logger).info(
+    'Allowed Origins: ' + allowedOrigins?.join(', ')
+  );
+
+  server.use(
+    (request: Request, response: Response, next: NextFunction): void => {
+      const oldValue = request.get('X-Request-Id');
+      const id = oldValue === undefined ? uuidv4() : oldValue;
+
+      response.set('X-Request-Id', id);
+      request.id = id;
+      // (Container.get('logger') as Logger).info('creating unique id: ' + id);
+
+      next();
+    }
+  );
+
+  // Health URL is mandatory, e.g. /health or /service/health
+  server.get(
+    PathUtils.prepare(routePrefix, 'health'),
+    (req: Request, res: Response) => {
+      // const resp = new ApiResponse();
+      // resp.markSuccess();
+      // return res.status(res.statusCode).json(resp.createResponse());
+      return res.status(200).send();
+    }
+  );
 
   // Disable the x-powered-by header
   server.disable('x-powered-by');
@@ -57,27 +96,28 @@ function setUpExpressBase({
         // preflightContinue: true,
       })
     );
-
   // Some sauce that always add since 2014
   // "Lets you use HTTP verbs such as PUT or DELETE in places where the client doesn't support it."
   // Maybe not needed anymore ?
-  // server.use(require('method-override')());
+  server.use(require('method-override')());
 
   // Transforms the raw string of req.body into json
   server.use(express.json());
 
+  // Load API routes
+  server.use(PathUtils.addSlashPrefix(routePrefix), createRoutes());
+
   /// catch 404 and forward to error handler
   server.use((req: Request, res: Response) => {
     if (!req.status && !req.httpStatusCode) {
-      // res
-      //   .send(
-      //     new ApiResponse()
-      //       .setMessage('Error occurred')
-      //       .addError('Not found')
-      //       .createResponse()
-      //   )
-      //   .status(apiResponseCodes.urlNotFound)
-      //   .end();
+      (Container.get('logger') as Logger).silly(
+        new LogBuilder('New Request Found 404')
+          .addSection(req.method, req.baseUrl + '')
+          .addSection('Status', apiResponseCodes.urlNotFound + '')
+          .addSection('Request QueryParams', req.url)
+          .addSection('Request Headers', JSON.stringify(req.headers))
+          .build()
+      );
 
       return res.status(apiResponseCodes.urlNotFound).send();
     }
@@ -124,26 +164,20 @@ function setUpExpressBase({
             .send(apiResponse.createResponse())
             .end();
         } else if ((err as Error).name === 'UnauthorizedError') {
-          /**
-           * Handle Unauthorized Error
-           */
+          // Handle Unauthorized Error
           apiResponse.setSuccess(false);
-
           apiResponse.setHttpCode(
             apiResponseCodes.unauthorized || req.httpStatusCode
           );
 
-          /**
-           * Copy error messages
-           * to error section
-           */
-          // if (err.details) {
-          //   for (const errDetail of err.details) {
-          //     apiResponse.addError(errDetail.message);
-          //   }
-          // } else {
-          //   apiResponse.setErrors(['Authorization Error']);
-          // }
+          (Container.get('logger') as Logger).silly(
+            new LogBuilder('New Request Found Unauthorised')
+              .addSection(req.method, req.baseUrl + '')
+              .addSection('Status', apiResponseCodes.urlNotFound + '')
+              .addSection('Request QueryParams', req.url)
+              .addSection('Request Headers', JSON.stringify(req.headers))
+              .build()
+          );
         } else {
           // throw err;
           return next(err);

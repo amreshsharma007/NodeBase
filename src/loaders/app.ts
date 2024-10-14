@@ -33,6 +33,7 @@ async function startServer(opts: opts): Promise<void> {
       🛡️  Server listening on port: ${opts.port} 🛡️
       🛡️
       🛡️  Links Configured
+      🛡️  ENV: ${process.env.NODE_ENV}
       🛡️  MongoDB: ${process.env.MONGODB_URI}
       ###############################################################
 

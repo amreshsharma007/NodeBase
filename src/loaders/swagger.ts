@@ -1,6 +1,7 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJSDoc, {Information, SwaggerDefinition} from 'swagger-jsdoc';
+import PathUtils from '../utils/path.utils';
 
 function setUpSwagger({
                           app,
@@ -10,7 +11,8 @@ function setUpSwagger({
                           baseURL,
                           dirToScan,
                           routePath,
-                          tags,
+                          routePrefix,
+                          tags, contact
                       }: {
     app: express.Application;
     title: string;
@@ -19,7 +21,12 @@ function setUpSwagger({
     baseURL: string;
     dirToScan?: string[];
     routePath?: string;
+    routePrefix?: string;
     tags?: { name: string; description?: string }[];
+    contact?: {
+        name: 'Base',
+        url?: 'https://www.castler.com',
+    }
 }): void {
     if (!app) return;
 
@@ -31,10 +38,7 @@ function setUpSwagger({
             title,
             version,
             description,
-            contact: {
-                name: 'Castler',
-                url: 'https://www.castler.com',
-            },
+            contact,
         } as Information,
         servers: [
             {
@@ -61,14 +65,30 @@ function setUpSwagger({
         // Paths to files containing OpenAPI definitions
         apis: dirToScan || [
             './src/**/*.ts',
-            './build/**/*.js'
+            './build/**/*.js',
         ],
         customCss: 'small.version-stamp { display: none }',
     };
 
-    const swaggerSpec = swaggerJSDoc(options);
+    const swaggerSpec = swaggerJSDoc(options) as {
+        paths: string[];
+    };
+
+    // Apply prefix in all the endpoints
+    for (const path of Object.keys(swaggerSpec['paths'])) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        swaggerSpec['paths'][PathUtils.prepare(routePrefix, path)] =
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            swaggerSpec['paths'][path];
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        delete swaggerSpec['paths'][path];
+    }
+
     app.use(
-        '/' + (routePath || 'swagger-ui'),
+        PathUtils.prepare(routePrefix, routePath, 'swagger-ui'),
         swaggerUi.serve,
         swaggerUi.setup(swaggerSpec)
     );
