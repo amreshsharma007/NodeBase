@@ -4,25 +4,30 @@ import swaggerJSDoc, { Information, SwaggerDefinition } from 'swagger-jsdoc';
 import PathUtils from '../utils/path.utils';
 
 function setUpSwagger({
-  app,
-  title,
-  version,
-  description,
-  baseURL,
-  dirToScan,
-  routePath,
-  routePrefix,
-  tags,
-}: {
-  app: express.Application;
-  title: string;
-  version?: string;
-  description?: string;
-  baseURL: string;
-  dirToScan?: string[];
-  routePath?: string;
-  routePrefix?: string;
-  tags?: { name: string; description?: string }[];
+                          app,
+                          title,
+                          version,
+                          description,
+                          baseURL,
+                          dirToScan,
+                          routePath,
+                          routePrefix,
+                          tags,
+                          contact,
+                      }: {
+    app: express.Application;
+    title: string;
+    version?: string;
+    description?: string;
+    baseURL: string;
+    dirToScan?: string[];
+    routePath?: string;
+    routePrefix?: string;
+    tags?: { name: string; description?: string }[];
+    contact?: {
+        name?: 'Castler';
+        url?: 'https://www.castler.com';
+    };
 }): void {
     if (!app) return;
 
@@ -34,7 +39,10 @@ function setUpSwagger({
             title,
             version,
             description,
-            contact,
+            contact: {
+                name: contact?.name || 'Castler',
+                url: contact?.url || 'https://www.castler.com',
+            },
         } as Information,
         servers: [
             {
@@ -62,6 +70,7 @@ function setUpSwagger({
         apis: dirToScan || [
             './src/**/*.ts',
             './build/**/*.js',
+            './node_modules/@ncome/v1-base/dist/*.ts',
         ],
         customCss: 'small.version-stamp { display: none }',
     };
