@@ -1,6 +1,6 @@
 {
   "name": "@aks007/node-base",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Node Base",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
