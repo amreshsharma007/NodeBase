@@ -1,32 +1,28 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc, {Information, SwaggerDefinition} from 'swagger-jsdoc';
+import swaggerJSDoc, { Information, SwaggerDefinition } from 'swagger-jsdoc';
 import PathUtils from '../utils/path.utils';
 
 function setUpSwagger({
-                          app,
-                          title,
-                          version,
-                          description,
-                          baseURL,
-                          dirToScan,
-                          routePath,
-                          routePrefix,
-                          tags, contact
-                      }: {
-    app: express.Application;
-    title: string;
-    version?: string;
-    description?: string;
-    baseURL: string;
-    dirToScan?: string[];
-    routePath?: string;
-    routePrefix?: string;
-    tags?: { name: string; description?: string }[];
-    contact?: {
-        name: 'Base',
-        url?: 'https://www.castler.com',
-    }
+  app,
+  title,
+  version,
+  description,
+  baseURL,
+  dirToScan,
+  routePath,
+  routePrefix,
+  tags,
+}: {
+  app: express.Application;
+  title: string;
+  version?: string;
+  description?: string;
+  baseURL: string;
+  dirToScan?: string[];
+  routePath?: string;
+  routePrefix?: string;
+  tags?: { name: string; description?: string }[];
 }): void {
     if (!app) return;
 
