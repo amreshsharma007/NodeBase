@@ -1,16 +1,16 @@
 import LogBuilder from '../utils/log-builder';
 
 export default interface JobOptionInterface {
-  cron?: string;
-  timeStartAt?: string;
-  timeRepeatAt?: string;
-  timeRepeatEvery?: string;
+    cron?: string;
+    timeStartAt?: string;
+    timeRepeatAt?: string;
+    timeRepeatEvery?: string;
 
-  startDate?: Date;
-  endDate?: Date;
+    startDate?: Date;
+    endDate?: Date;
 
-  data?: unknown;
+    data?: unknown;
 
-  deleteIfExists?: boolean;
-  logBuilder: LogBuilder;
+    deleteIfExists?: boolean;
+    logBuilder: LogBuilder;
 }

@@ -1,6 +1,6 @@
 import express from 'express';
 import swaggerUi from 'swagger-ui-express';
-import swaggerJSDoc, { Information, SwaggerDefinition } from 'swagger-jsdoc';
+import swaggerJSDoc, {Information, SwaggerDefinition} from 'swagger-jsdoc';
 import PathUtils from '../utils/path.utils';
 
 function setUpSwagger({

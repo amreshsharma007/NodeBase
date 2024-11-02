@@ -1,11 +1,11 @@
 import DocumentInterface from './document.interface';
 
 export default interface FileService {
-  save(doc: DocumentInterface): void;
+    save(doc: DocumentInterface): void;
 
-  find(): DocumentInterface[];
+    find(): DocumentInterface[];
 
-  findOne(): DocumentInterface | undefined;
+    findOne(): DocumentInterface | undefined;
 
-  download(): void;
+    download(): void;
 }

@@ -1,5 +1,5 @@
 export default interface MongooseOptionInterface {
-  returnObject: boolean;
-  new: boolean;
-  many?: boolean;
+    returnObject: boolean;
+    new: boolean;
+    many?: boolean;
 }
