@@ -29,3 +29,6 @@ export {default as setUpExpressBase} from './loaders/setUpExpressBase';
 export {default as ExceptionMonitorService} from './services/exception-monitor.service';
 export {default as Request} from './interfaces/request';
 export {default as LogUtils} from './utils/log.utils';
+export {default as BaseError} from './exceptions/base.error';
+export {default as RequestValidationError} from './exceptions/request-validation.error';
+export {default as UnauthorizedError} from './exceptions/unauthorized.error';
