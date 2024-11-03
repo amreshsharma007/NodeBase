@@ -144,28 +144,7 @@ export default class ApiResponse<T> {
         return this;
     }
 
-    // public updateRequest(
-    //   req: Request,
-    //   code: number,
-    //   message: string,
-    //   errors: string[]
-    // ): boolean {
-    //   if (!req) return false;
-    //
-    //   if (code) req.appCode = code;
-    //   if (message) req.message = message;
-    //   if (errors && errors.length > 0) {
-    //     if (!req.errors) {
-    //       req.errors = [];
-    //     }
-    //     for (const error of errors) {
-    //       req.errors.push(error);
-    //     }
-    //   }
-    //
-    //   return true;
-    // }
-
+    // public createResponse(res:Response): ApiResponse<T> {
     public createResponse(): ApiResponse<T> {
         const data = {} as ApiResponse<T>;
 
