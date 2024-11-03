@@ -4,7 +4,7 @@ export default abstract class BaseError extends Error {
 
     error: { [key: string]: string[] } | string | undefined;
 
-    protected constructor(message: string, error: { [key: string]: string[] } | undefined = undefined) {
+    protected constructor(message: string, error: { [key: string]: string[] } | string | undefined = undefined) {
         super(message || 'Error occurred');
 
         this.name = this.constructor.name;
