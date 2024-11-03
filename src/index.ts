@@ -32,3 +32,4 @@ export {default as LogUtils} from './utils/log.utils';
 export {default as BaseError} from './exceptions/base.error';
 export {default as RequestValidationError} from './exceptions/request-validation.error';
 export {default as UnauthorizedError} from './exceptions/unauthorized.error';
+export {default as ServerError} from './exceptions/server.error';
